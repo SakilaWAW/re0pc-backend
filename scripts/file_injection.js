@@ -3,7 +3,7 @@
 const fs = require('fs');
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('re0pcDB', 'stg', 'Greedisgood', {
+const sequelize = new Sequelize('re0pcDB', 'stg', 'postgres', {
   host: 'localhost',
   dialect: 'postgres',
   operatorsAliases: false,
@@ -15,6 +15,11 @@ const sequelize = new Sequelize('re0pcDB', 'stg', 'Greedisgood', {
     idle: 10000
   },
 });
+
+sequelize.authenticate()
+  .then(() => {
+    console.log('success!');
+  });
 
 const inject = (file) => {
 
