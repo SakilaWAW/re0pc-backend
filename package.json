@@ -1,0 +1,21 @@
+{
+  "name": "re0pc-backend",
+  "version": "1.0.0",
+  "description": "re0pc's backend using nodejs",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm test",
+    "start": "node app.js"
+  },
+  "keywords": [
+    "koa2",
+    "js"
+  ],
+  "author": "SakilaWAW",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.5.0",
+    "koa-router": "^7.4.0",
+    "node-schedule": "^1.3.0"
+  }
+}
