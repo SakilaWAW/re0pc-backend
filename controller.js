@@ -4,6 +4,9 @@ const router = require('koa-router')();
 // 取得path路径下所有js文件
 const get_modules = (path) => {
   const files = fs.readdirSync(`${__dirname}/${path}`);
+  fs.stat(`${__dirname}/${path}/test.js`, (err, stats) => {
+    console.log(stats);
+  });
   return files.filter((f) => {
     return f.endsWith('.js');
   });
