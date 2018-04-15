@@ -9,7 +9,7 @@ rule.hour = 16;
 rule.minute = 58;
 
 const j = schedule.scheduleJob(rule, function(){
-  console.log("执行任务");
+  const inject_executor = require('file_inject_executor');
 });
 
 console.log("定时任务设置完毕");

@@ -1,9 +1,8 @@
 module.exports = function(sequelize, DataTypes){
-  return sequelize.define('article_info', {
+  return sequelize.define('articles', {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       primaryKey: true,
-      autoIncrement: true,
     },
     title: DataTypes.STRING(30),
     content: DataTypes.TEXT,
