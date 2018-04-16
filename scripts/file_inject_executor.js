@@ -1,9 +1,9 @@
 "use strict";
 
-const fs = require('fs');
 const Sequelize = require('sequelize');
 const config = require('../config.js');
 const uuidv1 = require('uuid/v1');
+const file_reader = require('./file_reader');
 
 // 链接数据库
 const sequelize = new Sequelize(config.dbName, config.userName, config.pwd, {
@@ -18,11 +18,12 @@ const sequelize = new Sequelize(config.dbName, config.userName, config.pwd, {
   },
 });
 
-let Article = sequelize.import(`${__dirname}/../models/article`);
+//=====================================================================
+let Articles = sequelize.import(`${__dirname}/../models/articles`);
 let Tags = sequelize.import(`${__dirname}/../models/tags`);
 
 const create_func = async () => {
-  await Article.sync({force: false});
+  await Articles.sync({force: false});
   await Tags.sync({force: false});
   testData();
 };
@@ -30,7 +31,7 @@ const create_func = async () => {
 const testData = async () => {
   const uuid1 = uuidv1();
   const uuid2 = uuidv1();
-  await Article.create({
+  await Articles.create({
     id: uuid1,
     title: '标题在这里1',
     content: '内容在这里，mixed with English.',
@@ -40,7 +41,7 @@ const testData = async () => {
     console.log('插入了一条数据');
   });
 
-  await Article.create({
+  await Articles.create({
     id: uuid2,
     title: '标题在这里2',
     content: '内容在这里，mixed with English.',
@@ -71,11 +72,9 @@ const testData = async () => {
 };
 
 create_func().then(()=> {console.log('promise完成')});
-
-// 将file内容转换为model
-const map = (file) => {
-
-};
+//=====================================================================
+const path = '/home/stg/WebProjects/md_files/';
+console.log(file_reader.detect(path));
 
 // 将model注入到数据库中
 const inject = (model) => {
