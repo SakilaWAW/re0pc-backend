@@ -74,7 +74,7 @@ const testData = async () => {
 create_func().then(()=> {console.log('promise完成')});
 //=====================================================================
 const path = '/home/stg/WebProjects/md_files/';
-console.log(file_reader.detect(path));
+file_reader.detect(path);
 
 // 将model注入到数据库中
 const inject = (model) => {
