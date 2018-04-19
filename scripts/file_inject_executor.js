@@ -1,90 +1,29 @@
 "use strict";
 
-const Sequelize = require('sequelize');
-const config = require('../config.js');
-const uuidv1 = require('uuid/v1');
-const file_reader = require('./file_reader');
-
-// 链接数据库
-const sequelize = new Sequelize(config.dbName, config.userName, config.pwd, {
-  host: config.host,
-  dialect: 'postgres',
-  operatorsAliases: false,
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
-  },
-});
-
-//=====================================================================
-let Articles = sequelize.import(`${__dirname}/../models/articles`);
-let Tags = sequelize.import(`${__dirname}/../models/tags`);
-
-const create_func = async () => {
-  await Articles.sync({force: false});
-  await Tags.sync({force: false});
-  testData();
-};
-
-const testData = async () => {
-  const uuid1 = uuidv1();
-  const uuid2 = uuidv1();
-  await Articles.create({
-    id: uuid1,
-    title: '标题在这里1',
-    content: '内容在这里，mixed with English.',
-    type: '读书笔记',
-    count: 0,
-  }).then(() => {
-    console.log('插入了一条数据');
-  });
-
-  await Articles.create({
-    id: uuid2,
-    title: '标题在这里2',
-    content: '内容在这里，mixed with English.',
-    type: '读书笔记',
-    count: 0,
-  }).then(() => {
-    console.log('又插入了一条数据');
-  });
-
-  Tags.create({
-    uuid: uuid1,
-    tag: '神奇',
-  });
-  Tags.create({
-    uuid: uuid1,
-    tag: '奇幻',
-  });
-  Tags.create({
-    uuid: uuid2,
-    tag: '穿越',
-  });
-  Tags.create({
-    uuid: uuid2,
-    tag: '奇幻',
-  }).then(() => {
-    console.log('Tags插入了一条数据');
-  });
-};
-
-create_func().then(()=> {console.log('promise完成')});
-//=====================================================================
-const path = '/home/stg/WebProjects/md_files/';
-file_reader.detect(path);
+const file_analyzer = require('./file_analyzer');
+const db_util = require('./db_util');
 
 // 将model注入到数据库中
-const inject = (model) => {
-
+const inject = async (article) => {
+  const uuid = await db_util.queryByName(article.title);
+  if (uuid === null) { // 不在数据库中 进行插入操作
+    return await db_util.insertArticle(article);
+  } else { // 原来就在数据库中 进行相应的更新操作
+    const originArticle = await db_util.queryByUUID(uuid);
+  }
 };
 
-const exec = (file) => {
-  inject(map(file));
-};
+const path = process.argv[2];// '/home/stg/WebProjects/md_files/'
+
+db_util.sync().then(()=>{
+  return file_analyzer.analyzeFile(path);
+}).then((article) => {
+    console.log(`article:${article.title}已分析完毕，正在注入数据库...`);
+    return inject(article);
+  }).then(() => {
+  console.log(`注入操作已完成`);
+});
 
 module.exports = {
-  exec,
+
 };
