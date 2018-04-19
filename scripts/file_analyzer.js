@@ -7,8 +7,8 @@
 const promisify = require('util').promisify;
 const fs = require('fs');
 const uuidv1 = require('uuid/v1');
-const Article = require('../models/factories/article');
-const Tag = require('../models/factories/tag');
+const Article = require('../models/entity/article');
+const Tag = require('../models/entity/tag');
 
 // const readDirAsync = promisify(fs.readdir);
 const readFileAsync = promisify(fs.readFile);

@@ -76,26 +76,7 @@ const queryByUUID = async (uuid) => {
  */
 const queryByName = async (articleName) => {
   const results = await sequelize.query(`select id from articles where title = '${articleName}'`, { type: sequelize.QueryTypes.SELECT });
-  console.log(JSON.stringify(`====================\n${JSON.stringify(results)}\n================================`));
   return JSON.stringify(results) === '[]' ? null : results[0].id;
-};
-
-/**
- * 更新标签
- * 原来没有的会增加，多余的会删除
- * @param uuid 文章uuid
- * @param tags 新的标签-形如[{uuid:'',tag:''}...],见file_analyzer.js
- */
-const updateTags = async (uuid, tags) => {
-  const originTags = await queryTags(uuid);
-  console.log(originTags);
-  const deleteTags = originTags.filter((tag)=>{
-    return !(tag in tags);
-  });
-  const insertTags = tags.filter((tag) => {
-    return !(tag in originTags);
-  });
-  console.log(`deleteTags:${JSON.stringify(deleteTags)}\ninsertTags:${JSON.stringify(insertTags)}`);
 };
 
 /**
@@ -145,7 +126,8 @@ const updateCount = async (uuid ,count) => {
  */
 const insertTags = async (tags) => {
   return tags.map((tag)=> {
-    return Tags.upsert(tag);
+    console.log(`insertTags():${JSON.stringify(tag)}`);
+    return Tags.create(tag);
   });
 };
 
@@ -155,8 +137,36 @@ const insertTags = async (tags) => {
  */
 const deleteTags = async (tags) => {
   return tags.map((tag) => {
+    console.log(`deleteTags():${JSON.stringify(tag)}`);
     return Tags.destroy({where: tag});
   });
+};
+
+/**
+ * TODO 逻辑有待深究
+ * 更新标签
+ * 原来没有的会增加，多余的会删除
+ * @param uuid 文章uuid
+ * @param tags 新的标签-形如[{uuid:'',tag:''}...],见file_analyzer.js
+ */
+const updateTags = async (uuid, tags) => {
+  const originTags = await queryTags(uuid);
+  console.log(originTags);
+  const deleteTagArr = originTags.filter((tag)=>{
+    return !(tag in tags);
+  }).map((tag)=>{
+    tag.uuid = uuid;
+    return tag;
+  });
+  const insertTagArr = tags.filter((tag) => {
+    return !(tag in originTags);
+  }).map((tag) => {
+    tag.uuid = uuid;
+    return tag;
+  });
+  console.log(`deleteTags:${JSON.stringify(deleteTagArr)}\ninsertTags:${JSON.stringify(insertTagArr)}`);
+  await deleteTags(deleteTagArr);
+  await insertTags(insertTagArr);
 };
 
 /**
@@ -164,7 +174,7 @@ const deleteTags = async (tags) => {
  * @param article article对象-详见file_analyzer
  */
 const insertArticle = async (article) => {
-  console.log(`即将插入的uuid为：${article.id}`)
+  console.log(`即将插入的uuid为：${article.id}`);
   await Articles.create(article);
   await insertTags(article.tag).then((promises)=>{
     return Promise.all(promises);
