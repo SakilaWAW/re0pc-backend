@@ -33,8 +33,6 @@ const injectFile = (path) => {
     return file_analyzer.analyzeFile(path);
   }).then((article) => {
     return inject(article);
-  }).then(() => {
-    console.log(`注入操作已完成`);
   });
 };
 
@@ -71,14 +69,13 @@ const exec = async (path) => {
     injectFile(path);
   }else if(fs.statSync(path).isDirectory()) {
     const filePaths = extractDir(path);
-    const existArticles = await db_util.queryAllArticle();
-    const targetFileNames = filePaths.map((name) => {
+    const fileNamesWithoutPath = filePaths.map((name) => {
       return name.split(/[/\\]/).pop();
     });
-    const deleteArticles = existArticles.filter((article)=>{
-      return !(article.title in targetFileNames);
-    });
-    const deletePromises = deleteArticles.map(async (article) => {
+    const allArticlesInDB = await db_util.queryAllArticle();
+    const deletePromises = allArticlesInDB.filter((article)=>{
+      return !(article.title in fileNamesWithoutPath);
+    }).map(async (article) => {
       return await db_util.deleteArticle(article.id);
     });
     const filePromises = filePaths.map(async (path) => {

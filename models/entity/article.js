@@ -14,12 +14,10 @@ Article.createWith = function (jsonObj) {
 };
 
 Article.prototype.contentEqualWith = function(article) {
-  console.log(`=================Article.prototype.contentEqualWith() = ${article.content === this.content}`);
   return article.content === this.content;
 };
 
 Article.prototype.typeEqualWith = function(article) {
-  console.log(`=================Article.prototype.typeEqualWith() = ${article.type === this.type}`);
   return article.type === this.type;
 };
 

@@ -132,7 +132,6 @@ const updateCount = async (uuid ,count) => {
  */
 const insertTags = async (tags) => {
   return tags.map((tag)=> {
-    console.log(`insertTags():${JSON.stringify(tag)}`);
     return Tags.create(tag);
   });
 };
@@ -143,7 +142,6 @@ const insertTags = async (tags) => {
  */
 const deleteTags = async (tags) => {
   return tags.map((tag) => {
-    console.log(`deleteTags():${JSON.stringify(tag)}`);
     return Tags.destroy({where: tag});
   });
 };
@@ -162,7 +160,6 @@ const updateTags = async (uuid, tags) => {
   const insertTagArr = tags.filter((tag) => {
     return !Tag.createWith(tag).inArray(originTags);
   });
-  console.log(`deleteTags:${JSON.stringify(deleteTagArr)}\ninsertTags:${JSON.stringify(insertTagArr)}`);
   await deleteTags(deleteTagArr);
   await insertTags(insertTagArr);
 };
@@ -172,12 +169,9 @@ const updateTags = async (uuid, tags) => {
  * @param article article对象-详见file_analyzer
  */
 const insertArticle = async (article) => {
-  console.log(`即将插入的uuid为：${article.id}`);
   await Articles.create(article);
   await insertTags(article.tag).then((promises)=>{
     return Promise.all(promises);
-  }).then(()=>{
-    console.log('新增操作执行完毕');
   });
 };
 
@@ -198,7 +192,7 @@ const queryAllArticle = async () => {
   return await sequelize.query(`select id, title from articles`, { type: sequelize.QueryTypes.SELECT });
 };
 
-queryAllArticle().then((res)=>{console.log(res)});
+// queryAllArticle().then((res)=>{console.log(res)});
 
 // deleteArticle("7f70c560-4303-11e8-bb7e-6d8bed90d435").then(() => {
 //   console.log('deleteArticle操作完成！');
