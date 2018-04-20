@@ -23,6 +23,8 @@ const link = () => {
 const sequelize = link();
 const Articles = sequelize.import(`${__dirname}/../models/articles`);
 const Tags = sequelize.import(`${__dirname}/../models/tags`);
+const Tag = require('../models/entity/tag');
+const Article = require('../models/entity/article');
 
 /**
  * 初始化数据库表结构
@@ -38,7 +40,7 @@ const sync = async () => {
  * @return tag数组
  */
 const queryTags = async (uuid) => {
-  return await sequelize.query(`select tag from tags where uuid = '${uuid}'`, { type: sequelize.QueryTypes.SELECT });
+  return await sequelize.query(`select uuid, tag from tags where uuid = '${uuid}'`, { type: sequelize.QueryTypes.SELECT });
 };
 
 // queryTags('f84258e0-4381-11e8-b077-db0393b0d3db').then((res)=>{
@@ -68,6 +70,10 @@ const queryByUUID = async (uuid) => {
   result.tag = await queryTags(uuid);
   return result;
 };
+
+// queryByUUID("4b8d53b0-43cd-11e8-8f43-d56b043d36a4").then((res)=>{
+//   console.log(res);
+// });
 
 /**
  * 通过文章名查询信息
@@ -151,18 +157,15 @@ const deleteTags = async (tags) => {
  */
 const updateTags = async (uuid, tags) => {
   const originTags = await queryTags(uuid);
-  console.log(originTags);
-  const deleteTagArr = originTags.filter((tag)=>{
-    return !(tag in tags);
-  }).map((tag)=>{
+  tags = tags.map((tag)=>{// 将需要插入的tag的uuid换为以前的
     tag.uuid = uuid;
     return tag;
   });
+  const deleteTagArr = originTags.filter((tag)=>{
+    return !Tag.createWith(tag).inArray(tags);
+  });
   const insertTagArr = tags.filter((tag) => {
-    return !(tag in originTags);
-  }).map((tag) => {
-    tag.uuid = uuid;
-    return tag;
+    return !Tag.createWith(tag).inArray(originTags);
   });
   console.log(`deleteTags:${JSON.stringify(deleteTagArr)}\ninsertTags:${JSON.stringify(insertTagArr)}`);
   await deleteTags(deleteTagArr);

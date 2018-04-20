@@ -10,7 +10,7 @@ const inject = async (article) => {
   if (uuid === null) { // 不在数据库中 进行插入操作
     return await db_util.insertArticle(article);
   } else { // 原来就在数据库中 进行相应的更新操作
-    const originArticle = Article.cloneWith(await db_util.queryByUUID(uuid));
+    const originArticle = Article.createWith(await db_util.queryByUUID(uuid));
     console.log(JSON.stringify(originArticle));
     const promiseArr = [];
     console.log(`===========================uuid:${uuid}`);

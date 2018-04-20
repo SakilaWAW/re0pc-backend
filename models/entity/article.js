@@ -7,8 +7,8 @@ const Article = function(uuid, fileName, content, type, count, tags) {
   this.tag = tags;
 };
 
-Article.cloneWith = function (article) {
-  return new Article(article.id, article.title, article.content, article.type, article.count, article.tag);
+Article.createWith = function (jsonObj) {
+  return new Article(jsonObj.id, jsonObj.title, jsonObj.content, jsonObj.type, jsonObj.count, jsonObj.tag);
 };
 
 Article.prototype.contentEqualWith = function(article) {
