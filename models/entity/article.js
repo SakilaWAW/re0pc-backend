@@ -1,3 +1,5 @@
+const Tag = require('./tag');
+
 const Article = function(uuid, fileName, content, type, count, tags) {
   this.id = uuid;
   this.title = fileName;
@@ -22,8 +24,11 @@ Article.prototype.typeEqualWith = function(article) {
 };
 
 Article.prototype.tagsEqualWith = function(article) {
-  console.log(`=================Article.prototype.tagsEqualWith() = ${JSON.stringify(this.tag) === JSON.stringify(article.tag)}`);
-  return JSON.stringify(this.tag) === JSON.stringify(article.tag);
+  if(this.tag.length !== article.tag.length) return false;
+  for (let i = 0; i< this.tag.length; i++) {
+    if(!Tag.createWith(this.tag[i]).inArray(article.tag)) return false;
+  }
+  return true;
 };
 
 module.exports = Article;

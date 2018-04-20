@@ -68,7 +68,7 @@ const queryByUUID = async (uuid) => {
   const results = await sequelize.query(`select * from articles where id = '${uuid}'`, { type: sequelize.QueryTypes.SELECT });
   let result = results[0];
   result.tag = await queryTags(uuid);
-  return result;
+  return Article.createWith(result);
 };
 
 // queryByUUID("4b8d53b0-43cd-11e8-8f43-d56b043d36a4").then((res)=>{
@@ -149,7 +149,6 @@ const deleteTags = async (tags) => {
 };
 
 /**
- * TODO 逻辑有待深究
  * 更新标签
  * 原来没有的会增加，多余的会删除
  * @param uuid 文章uuid
@@ -157,10 +156,6 @@ const deleteTags = async (tags) => {
  */
 const updateTags = async (uuid, tags) => {
   const originTags = await queryTags(uuid);
-  tags = tags.map((tag)=>{// 将需要插入的tag的uuid换为以前的
-    tag.uuid = uuid;
-    return tag;
-  });
   const deleteTagArr = originTags.filter((tag)=>{
     return !Tag.createWith(tag).inArray(tags);
   });
