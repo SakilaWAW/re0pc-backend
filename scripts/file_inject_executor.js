@@ -26,8 +26,6 @@ const inject = async (article) => {
   }
 };
 
-const path = process.argv[2];// '/home/stg/WebProjects/md_files/'
-
 const injectFile = (path) => {
   db_util.sync().then(() => {
     return file_analyzer.analyzeFile(path);
@@ -74,7 +72,10 @@ const exec = async (path) => {
     });
     const allArticlesInDB = await db_util.queryAllArticle();
     const deletePromises = allArticlesInDB.filter((article)=>{
-      return !(article.title in fileNamesWithoutPath);
+      for(let i = 0; i< fileNamesWithoutPath.length; i++){
+        if(fileNamesWithoutPath[i] === article.title) return false;
+      }
+      return true;
     }).map(async (article) => {
       return await db_util.deleteArticle(article.id);
     });
@@ -86,10 +87,6 @@ const exec = async (path) => {
     throw "file_inject_executor.exec()录入路径既不是md文件又不是文件夹";
   }
 };
-
-exec(path).then(()=>{
-  console.log('脚本执行完毕！');
-});
 
 module.exports = {
   exec,
