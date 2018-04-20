@@ -198,6 +198,8 @@ const queryAllArticle = async () => {
   return await sequelize.query(`select id, title from articles`, { type: sequelize.QueryTypes.SELECT });
 };
 
+queryAllArticle().then((res)=>{console.log(res)});
+
 // deleteArticle("7f70c560-4303-11e8-bb7e-6d8bed90d435").then(() => {
 //   console.log('deleteArticle操作完成！');
 // }).catch((err)=> {

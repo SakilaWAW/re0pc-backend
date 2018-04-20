@@ -71,10 +71,20 @@ const exec = async (path) => {
     injectFile(path);
   }else if(fs.statSync(path).isDirectory()) {
     const filePaths = extractDir(path);
+    const existArticles = await db_util.queryAllArticle();
+    const targetFileNames = filePaths.map((name) => {
+      return name.split(/[/\\]/).pop();
+    });
+    const deleteArticles = existArticles.filter((article)=>{
+      return !(article.title in targetFileNames);
+    });
+    const deletePromises = deleteArticles.map(async (article) => {
+      return await db_util.deleteArticle(article.id);
+    });
     const filePromises = filePaths.map(async (path) => {
       return await injectFile(path);
     });
-    await Promise.all(filePromises);
+    await Promise.all(filePromises.concat(deletePromises));
   }else{
     throw "file_inject_executor.exec()录入路径既不是md文件又不是文件夹";
   }
