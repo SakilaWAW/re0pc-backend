@@ -2,8 +2,12 @@
 
 const file_analyzer = require('./file_analyzer');
 const db_util = require('./db_util');
+const fs = require('fs');
 
-// 将model注入到数据库中
+/**
+ * 将model注入到数据库中
+ * @param article 经过file_analyzer.js分析出的文章模型
+ */
 const inject = async (article) => {
   const uuid = await db_util.queryByName(article.title);
   if (uuid === null) { // 不在数据库中 进行插入操作
@@ -15,7 +19,6 @@ const inject = async (article) => {
     });
     const originArticle = await db_util.queryByUUID(uuid);
     const promiseArr = [];
-    console.log(`inject() 启动 target uuid=================================${uuid}`);
     if(!originArticle.contentEqualWith(article)) promiseArr.push(db_util.updateContent(uuid, article.content));
     if(!originArticle.typeEqualWith(article)) promiseArr.push(db_util.updateType(uuid, article.type));
     if(!originArticle.tagsEqualWith(article)) promiseArr.push(db_util.updateTags(uuid, article.tag));
@@ -25,15 +28,62 @@ const inject = async (article) => {
 
 const path = process.argv[2];// '/home/stg/WebProjects/md_files/'
 
-db_util.sync().then(()=>{
-  return file_analyzer.analyzeFile(path);
-}).then((article) => {
-    console.log(`article:${article.title}已分析完毕，正在注入数据库...`);
+const injectFile = (path) => {
+  db_util.sync().then(() => {
+    return file_analyzer.analyzeFile(path);
+  }).then((article) => {
     return inject(article);
   }).then(() => {
-  console.log(`注入操作已完成`);
+    console.log(`注入操作已完成`);
+  });
+};
+
+/**
+ * 使用递归遍历指定目录下的所有.md文件
+ * @param dir 指定目录
+ * @return {Array} 所有.md文件的路径
+ */
+const extractDir = (dir) => {
+  if(!dir.endsWith('/')) dir = dir + '/';
+  let result = [];
+  const files = fs.readdirSync(dir);
+  for (let i = 0; i < files.length; i++) {
+    const filePath = dir + files[i];
+    if(isValidFile(filePath)){
+      result.push(filePath);
+    } else if(fs.statSync(filePath).isDirectory()) {
+      result = result.concat(extractDir(filePath));
+    }
+  }
+  return result;
+};
+
+const isValidFile = (path) => {
+  return fs.statSync(path).isFile() && path.endsWith('.md')
+};
+
+/**
+ * 解析文件并录入
+ * @param path 支持单个文件录入和文件夹录入(path为文件夹的话会将其下所有.md文件录入数据库)
+ */
+const exec = async (path) => {
+  if(isValidFile(path)){
+    injectFile(path);
+  }else if(fs.statSync(path).isDirectory()) {
+    const filePaths = extractDir(path);
+    const filePromises = filePaths.map(async (path) => {
+      return await injectFile(path);
+    });
+    await Promise.all(filePromises);
+  }else{
+    throw "file_inject_executor.exec()录入路径既不是md文件又不是文件夹";
+  }
+};
+
+exec(path).then(()=>{
+  console.log('脚本执行完毕！');
 });
 
 module.exports = {
-
+  exec,
 };

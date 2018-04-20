@@ -10,9 +10,7 @@ const uuidv1 = require('uuid/v1');
 const Article = require('../models/entity/article');
 const Tag = require('../models/entity/tag');
 
-// const readDirAsync = promisify(fs.readdir);
 const readFileAsync = promisify(fs.readFile);
-const readStatAsync = promisify(fs.stat);
 
 const tagPackager = (uuid, tags) => {
   return tags.map((tag) => {
@@ -23,8 +21,6 @@ const tagPackager = (uuid, tags) => {
 const analyzeFile = async (path) => {
   try {
     const data = await readFileAsync(path);
-    // const stat = await readStatAsync(path);
-    // console.log(stat);
     const uuid = uuidv1();
     const fileName = path.split(/[/\\]/).pop();
     const reg_info = data.toString().match(/&=.*=&/);
@@ -38,31 +34,6 @@ const analyzeFile = async (path) => {
     console.log(`error in analyzeFile():file:${path}======${err}`);
   }
 };
-//
-// const path = process.argv[2];
-// const dbUtil = require('./db_util');
-//
-// dbUtil.sync()
-//   .then(()=> {
-//     return analyzeFile(path);
-//   }).then((article)=> {
-//     console.log(`即将插入的article：${article}`);
-//     return dbUtil.insert(article);
-//   }).then(()=> {
-//     console.log('插入完成！');
-//   });
-
-// const detect = async (path) => {
-//   console.log(`detect开始===设定路径为:${path}`);
-//   try {
-//     const files = await readDirAsync(path);
-//     return files.map((file)=> {
-//       return analyzeFile(path, file);
-//     });
-//   }catch(err) {
-//     console.log(`error in detect():${err}`);
-//   }
-// };
 
 module.exports = {
   analyzeFile,

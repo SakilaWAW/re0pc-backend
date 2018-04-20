@@ -190,6 +190,14 @@ const deleteArticle = async (uuid) => {
   await Articles.destroy({where: {id: uuid}});
 };
 
+/**
+ * 查询所有文章列表
+ * @return {Promise<*>} 一个promise，包含了所有文章列表格式为[{id:'',title:''}...]
+ */
+const queryAllArticle = async () => {
+  return await sequelize.query(`select id, title from articles`, { type: sequelize.QueryTypes.SELECT });
+};
+
 // deleteArticle("7f70c560-4303-11e8-bb7e-6d8bed90d435").then(() => {
 //   console.log('deleteArticle操作完成！');
 // }).catch((err)=> {
@@ -209,4 +217,5 @@ module.exports = {
   queryTags,
   deleteTags,
   insertArticle,
+  queryAllArticle,
 };
