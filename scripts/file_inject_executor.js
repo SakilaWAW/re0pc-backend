@@ -63,6 +63,7 @@ const isValidFile = (path) => {
  * @param path 支持单个文件录入和文件夹录入(path为文件夹的话会将其下所有.md文件录入数据库)
  */
 const exec = async (path) => {
+  await db_util.sync();
   if(isValidFile(path)){
     injectFile(path);
   }else if(fs.statSync(path).isDirectory()) {
@@ -70,7 +71,7 @@ const exec = async (path) => {
     const fileNamesWithoutPath = filePaths.map((name) => {
       return name.split(/[/\\]/).pop();
     });
-    const allArticlesInDB = await db_util.queryAllArticle();
+    const allArticlesInDB = await db_util.queryAllArticles();
     const deletePromises = allArticlesInDB.filter((article)=>{
       for(let i = 0; i< fileNamesWithoutPath.length; i++){
         if(fileNamesWithoutPath[i] === article.title) return false;

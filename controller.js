@@ -1,5 +1,5 @@
 const fs = require('fs');
-const router = require('koa-router')();
+const router = new require('koa-router')();
 
 // 取得path路径下所有js文件
 const get_modules = (path) => {

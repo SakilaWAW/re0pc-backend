@@ -188,8 +188,16 @@ const deleteArticle = async (uuid) => {
  * 查询所有文章列表
  * @return {Promise<*>} 一个promise，包含了所有文章列表格式为[{id:'',title:''}...]
  */
-const queryAllArticle = async () => {
-  return await sequelize.query(`select id, title from articles`, { type: sequelize.QueryTypes.SELECT });
+const queryAllArticles = async () => {
+  return await sequelize.query('select id, title, "createdAt", type, count from articles', { type: sequelize.QueryTypes.SELECT });
+};
+
+const queryArticlesOfType = async (type) => {
+  return await sequelize.query(`select id, title, "createdAt" from articles where type='${type}'`, { type: sequelize.QueryTypes.SELECT });
+};
+
+const queryArticlesOfTag = async (tag) => {
+
 };
 
 // queryAllArticle().then((res)=>{console.log(res)});
@@ -213,5 +221,6 @@ module.exports = {
   queryTags,
   deleteTags,
   insertArticle,
-  queryAllArticle,
+  queryAllArticles,
+  queryArticlesOfType,
 };

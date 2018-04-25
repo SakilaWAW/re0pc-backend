@@ -6,8 +6,12 @@ module.exports = function(sequelize, DataTypes){
         model: 'articles',
         key: 'id',
       },
+      primaryKey: true,
     },
-    tag: DataTypes.STRING(20),
+    tag: {
+      type: DataTypes.STRING(20),
+      primaryKey: true,
+    },
   },{
     timestamps: false,
     comment: '独立出标签表以便查询',
