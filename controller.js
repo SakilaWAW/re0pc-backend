@@ -4,9 +4,6 @@ const router = require('koa-router')();
 // 取得path路径下所有js文件
 const get_modules = (path) => {
   const files = fs.readdirSync(`${__dirname}/${path}`);
-  fs.stat(`${__dirname}/${path}/test.js`, (err, stats) => {
-    console.log(stats);
-  });
   return files.filter((f) => {
     return f.endsWith('.js');
   });
@@ -21,11 +18,11 @@ const inject_modules = (js_files) => {
     for (let func in mapping) {
       if (func.startsWith('GET')) {
         const map_url = func.substring(4);
-        router.get(map_url, mapping[func]);
+        router.get(map_url, ...mapping[func]);
         console.log(`AHA, ${func}(GET) is inject!`);
       } else if (func.startsWith('POST')) {
         const map_url = func.substring(5);
-        router.post(map_url, mapping[func]);
+        router.post(map_url, ...mapping[func]);
         console.log(`AHA, ${func}(POST) is inject!`);
       }else {
         console.log(`alert! there is something wrong with ${func}`);
