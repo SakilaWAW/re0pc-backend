@@ -10,7 +10,7 @@ const fs = require('fs');
  */
 const inject = async (article) => {
   const uuid = await db_util.queryByName(article.title);
-  if (uuid === null) { // 不在数据库中 进行插入操作
+  if (uuid === null) { // 不在数据库中 需要进行插入操作
     return await db_util.insertArticle(article);
   } else { // 原来就在数据库中 进行相应的更新操作
     article.tag = article.tag.map((tag)=>{// 替换uuid
@@ -27,9 +27,7 @@ const inject = async (article) => {
 };
 
 const injectFile = (path) => {
-  db_util.sync().then(() => {
-    return file_analyzer.analyzeFile(path);
-  }).then((article) => {
+  file_analyzer.analyzeFile(path).then((article) => {
     return inject(article);
   });
 };
