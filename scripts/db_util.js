@@ -197,7 +197,15 @@ const queryArticlesOfType = async (type) => {
 };
 
 const queryArticlesOfTag = async (tag) => {
+  return await sequelize.query(`select a.id, a.title, a."createdAt" from articles as a,tags as t where t.tag = '${tag}' and t.uuid = a.id`, { type: sequelize.QueryTypes.SELECT });
+};
 
+const queryArticlesGroupByYear = async () => {
+  return await sequelize.query('select id, title, "createdAt" from articles order by "createdAt"', { type: sequelize.QueryTypes.SELECT });
+};
+
+const queryTagsGroups = async () => {
+  return await sequelize.query('select tag,count(*) from tags group by tag', { type: sequelize.QueryTypes.SELECT });
 };
 
 // queryAllArticle().then((res)=>{console.log(res)});
@@ -223,4 +231,7 @@ module.exports = {
   insertArticle,
   queryAllArticles,
   queryArticlesOfType,
+  queryArticlesOfTag,
+  queryArticlesGroupByYear,
+  queryTagsGroups,
 };
