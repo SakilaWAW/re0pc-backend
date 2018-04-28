@@ -8,8 +8,11 @@ const _get_article_content = async (ctx) => {
 
 const _get_articles_by_page = async (ctx) => {
   const total_num = await db_util.queryArticleNum();
-  const total_page = Math.ceil(total_num / 10);
-  const articles = await db_util.queryArticlesByPage(ctx.params.page);
+  let articles = await db_util.queryArticleByPage(ctx.params.page, 10);
+  ctx.body = {
+    articles,
+    total_page: Math.ceil(total_num/10),
+  };
 };
 
 const _get_articles_of_type = async (ctx) => {

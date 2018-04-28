@@ -224,8 +224,7 @@ const queryArticleNum = async () => {
  * @return {Promise<void>} article对象数组-[{id,title,createdAt,type,count,content}...]
  */
 const queryArticleByPage = async (page, limit) => {
-  return await sequelize.query(`select id, title, "createdAt", type, count, content
-                                    from 
+  return await sequelize.query(`select id, title, "createdAt", type, count, content from 
                                     (
                                         select *,
                                                row_number() over(order by "createdAt" desc) as rowNum
