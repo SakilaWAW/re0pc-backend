@@ -208,6 +208,32 @@ const queryTagsGroups = async () => {
   return await sequelize.query('select tag,count(*) from tags group by tag', { type: sequelize.QueryTypes.SELECT });
 };
 
+/**
+ * 查询文章总数
+ * @return {Promise<*>}
+ */
+const queryArticleNum = async () => {
+  const res = await sequelize.query('select count(*) from articles', { type: sequelize.QueryTypes.SELECT });
+  return res[0].count;
+};
+
+/**
+ * 取某一页的文章-采用后台分页
+ * @param page 页数
+ * @param limit 每页的数量
+ * @return {Promise<void>} article对象数组-[{id,title,createdAt,type,count,content}...]
+ */
+const queryArticleByPage = async (page, limit) => {
+  return await sequelize.query(`select id, title, "createdAt", type, count, content
+                                    from 
+                                    (
+                                        select *,
+                                               row_number() over(order by "createdAt" desc) as rowNum
+                                        from articles
+                                    )a
+                                    where rowNum between ${(page-1)*limit+1} and ${page*limit}`, { type: sequelize.QueryTypes.SELECT });
+};
+
 // queryAllArticle().then((res)=>{console.log(res)});
 
 // deleteArticle("7f70c560-4303-11e8-bb7e-6d8bed90d435").then(() => {
@@ -234,4 +260,6 @@ module.exports = {
   queryArticlesOfTag,
   queryArticlesGroupByYear,
   queryTagsGroups,
+  queryArticleNum,
+  queryArticleByPage,
 };

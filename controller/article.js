@@ -6,8 +6,10 @@ const _get_article_content = async (ctx) => {
   ctx.body = await db_util.queryByUUID(ctx.params.id);
 };
 
-const _get_all_articles = async (ctx) => {
-  ctx.body = await db_util.queryAllArticles();
+const _get_articles_by_page = async (ctx) => {
+  const total_num = await db_util.queryArticleNum();
+  const total_page = Math.ceil(total_num / 10);
+  const articles = await db_util.queryArticlesByPage(ctx.params.page);
 };
 
 const _get_articles_of_type = async (ctx) => {
@@ -53,7 +55,7 @@ const _get_tag_stats = async (ctx) => {
  */
 module.exports = {
   'GET /article/:id': [_get_article_content],
-  'GET /articles': [_get_all_articles],
+  'GET /page/:page': [_get_articles_by_page],
   'GET /type/:type': [_get_articles_of_type],
   'GET /tag/:tag': [_get_articles_of_tag],
   'GET /stats/article': [_get_article_stats],
