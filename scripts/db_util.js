@@ -224,13 +224,18 @@ const queryArticleNum = async () => {
  * @return {Promise<void>} article对象数组-[{id,title,createdAt,type,count,content}...]
  */
 const queryArticleByPage = async (page, limit) => {
-  return await sequelize.query(`select id, title, "createdAt", type, count, content from 
+  const articles = await sequelize.query(`select id, title, "createdAt", type, count, content from 
                                     (
                                         select *,
                                                row_number() over(order by "createdAt" desc) as rowNum
                                         from articles
                                     )a
                                     where rowNum between ${(page-1)*limit+1} and ${page*limit}`, { type: sequelize.QueryTypes.SELECT });
+  articles.map((article)=>{
+    article.createdAt = `${article.createdAt.getFullYear()}-${article.createdAt.getMonth()}-${article.createdAt.getDay()}`;
+    article.title = article.title.slice(0,-3);
+  });
+  return articles;
 };
 
 // queryAllArticle().then((res)=>{console.log(res)});
