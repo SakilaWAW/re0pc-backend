@@ -43,13 +43,16 @@ const combine_articles_by_years = (articles) => {
   const articlesInGroup = [];
   let cur_articles = [];
   for (let i = 0 ;i < articles.length; i++) {
-    let this_year = articles[i].createdAt.getFullYear();
-    cur_articles.push(articles[i]);
+    let article = articles[i];
+    let this_year = article.createdAt.getFullYear();
+    cur_articles.push(article);
     if(i === articles.length-1
       || this_year !== articles[i+1].createdAt.getFullYear()){
       articlesInGroup.push({year: this_year, articles: cur_articles});
       cur_articles = [];
     }
+    article.createdAt = `${article.createdAt.getMonth()}-${article.createdAt.getDay()}`;
+    article.title = article.title.slice(0,-3);
   }
   return articlesInGroup;
 };
