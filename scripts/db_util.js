@@ -65,9 +65,11 @@ const queryCount = async (uuid) => {
  * @return article对象
  */
 const queryByUUID = async (uuid) => {
-  const results = await sequelize.query(`select * from articles where id = '${uuid}'`, { type: sequelize.QueryTypes.SELECT });
+  const results = await sequelize.query(`select id, title, "createdAt", type, count, content from articles where id = '${uuid}'`, { type: sequelize.QueryTypes.SELECT });
   let result = results[0];
   result.tag = await queryTags(uuid);
+  result.createdAt = `${result.createdAt.getFullYear()}-${result.createdAt.getMonth()}-${result.createdAt.getDay()}`;
+  result.title = result.title.slice(0,-3);
   return Article.createWith(result);
 };
 
@@ -115,9 +117,14 @@ const updateContent = async (uuid, content) => {
 //   console.log(`出错了！err：${err}`)
 // });
 
-// 更新点击数
+/**
+ * 增加某篇文章的点击数
+ * @param uuid 文章id
+ * @param count 增加数目(暂时只用增加1)
+ * @return {Promise<void>}
+ */
 const updateCount = async (uuid ,count) => {
-  await Articles.update({count}, {where: {id: uuid}, fields: ['count']});
+  await Articles.update({count:sequelize.literal(`count +${count}`)}, {where: {id: uuid}});
 };
 
 // updateCount("7f70c560-4303-11e8-bb7e-6d8bed90d435", 3).then(() => {

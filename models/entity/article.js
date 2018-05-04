@@ -1,16 +1,17 @@
 const Tag = require('./tag');
 
-const Article = function(uuid, fileName, content, type, count, tags) {
+const Article = function(uuid, fileName, content, type, count, tags, createdAt) {
   this.id = uuid;
   this.title = fileName;
   this.content = content;
   this.type = type;
   this.count = count;
   this.tag = tags;
+  this.createdAt = createdAt;
 };
 
 Article.createWith = function (jsonObj) {
-  return new Article(jsonObj.id, jsonObj.title, jsonObj.content, jsonObj.type, jsonObj.count, jsonObj.tag);
+  return new Article(jsonObj.id, jsonObj.title, jsonObj.content, jsonObj.type, jsonObj.count, jsonObj.tag, jsonObj.createdAt);
 };
 
 Article.prototype.contentEqualWith = function(article) {
