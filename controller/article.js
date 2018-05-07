@@ -31,7 +31,7 @@ const _get_articles_of_tag = async (ctx) => {
 };
 
 const _get_article_stats = async (ctx) => {
-  let articles = await db_util.queryArticlesGroupByYear();
+  let articles = await db_util.queryArticlesOrderByYear();
   ctx.body = {
     total: articles.length,
     articles: combine_articles_by_years(articles),
@@ -70,6 +70,10 @@ const _read_article = async (ctx) => {
   ctx.response.status = 204;
 };
 
+const _get_type_status = async (ctx) => {
+  ctx.body = await db_util.queryTypeGroups();
+};
+
 /**
  * 传入规则为：
  * 属性名为方式和url路径的拼接
@@ -83,4 +87,5 @@ module.exports = {
   'GET /stats/article': [_add_cors_tags, _get_article_stats],
   'GET /stats/tag': [_add_cors_tags, _get_tag_stats],
   'GET /read/:id': [_add_cors_tags, _read_article],
+  'GET /stats/type': [_add_cors_tags, _get_type_status],
 };

@@ -43,10 +43,6 @@ const queryTags = async (uuid) => {
   return await sequelize.query(`select uuid, tag from tags where uuid = '${uuid}'`, { type: sequelize.QueryTypes.SELECT });
 };
 
-// queryTags('f84258e0-4381-11e8-b077-db0393b0d3db').then((res)=>{
-//   console.log(`queryTags完成,结果是${JSON.stringify(res)}`);
-// });
-
 /**
  * 查询点击次数-通过uuid
  * @param uuid 文章uuid
@@ -73,10 +69,6 @@ const queryByUUID = async (uuid) => {
   return Article.createWith(result);
 };
 
-// queryByUUID("4b8d53b0-43cd-11e8-8f43-d56b043d36a4").then((res)=>{
-//   console.log(res);
-// });
-
 /**
  * 通过文章名查询信息
  * @param articleName 文章名
@@ -96,12 +88,6 @@ const updateType = async (uuid, type) => {
   await Articles.update({type}, {where: {id: uuid}, fields: ['type']});
 };
 
-// updateType("7f70c560-4303-11e8-bb7e-6d8bed90d435", '实用技能').then(() => {
-//   console.log('updateType操作完成！');
-// }).catch((err)=> {
-//   console.log(`出错了！err：${err}`)
-// });
-
 /**
  * 更新内容
  * @param uuid 文章uuid
@@ -110,12 +96,6 @@ const updateType = async (uuid, type) => {
 const updateContent = async (uuid, content) => {
   await Articles.update({content}, {where: {id: uuid}, fields: ['content']});
 };
-
-// updateContent("7f70c560-4303-11e8-bb7e-6d8bed90d435", '咔咔咔咔就变了').then(() => {
-//   console.log('updateContent操作完成！');
-// }).catch((err)=> {
-//   console.log(`出错了！err：${err}`)
-// });
 
 /**
  * 增加某篇文章的点击数
@@ -126,12 +106,6 @@ const updateContent = async (uuid, content) => {
 const updateCount = async (uuid ,count) => {
   await Articles.update({count:sequelize.literal(`count +${count}`)}, {where: {id: uuid}});
 };
-
-// updateCount("7f70c560-4303-11e8-bb7e-6d8bed90d435", 3).then(() => {
-//   console.log('updateCount操作完成！');
-// }).catch((err)=> {
-//   console.log(`出错了！err：${err}`)
-// });
 
 /**
  * 插入一组tag
@@ -207,10 +181,18 @@ const queryArticlesOfTag = async (tag) => {
   return await sequelize.query(`select a.id, a.title, a."createdAt" from articles as a,tags as t where t.tag = '${tag}' and t.uuid = a.id`, { type: sequelize.QueryTypes.SELECT });
 };
 
-const queryArticlesGroupByYear = async () => {
+/**
+ * 按年份顺序查询文章
+ * @return {Promise<*>} 按年份顺序返回 [{id,title,createdAt}...]
+ */
+const queryArticlesOrderByYear = async () => {
   return await sequelize.query('select id, title, "createdAt" from articles order by "createdAt"', { type: sequelize.QueryTypes.SELECT });
 };
 
+/**
+ * 查询各tag情况
+ * @return {Promise<*>} [{tag,数量}...]
+ */
 const queryTagsGroups = async () => {
   return await sequelize.query('select tag,count(*) from tags group by tag', { type: sequelize.QueryTypes.SELECT });
 };
@@ -245,13 +227,13 @@ const queryArticleByPage = async (page, limit) => {
   return articles;
 };
 
-// queryAllArticle().then((res)=>{console.log(res)});
-
-// deleteArticle("7f70c560-4303-11e8-bb7e-6d8bed90d435").then(() => {
-//   console.log('deleteArticle操作完成！');
-// }).catch((err)=> {
-//   console.log(`出错了！err：${err}`)
-// });
+/**
+ * 查询类别情况
+ * @return {Promise<*>} [{type,count}...]
+ */
+const queryTypeGroups = async () => {
+  return await sequelize.query('select type, count(*) from articles group by type', { type: sequelize.QueryTypes.SELECT });
+};
 
 module.exports = {
   sync,
@@ -269,8 +251,9 @@ module.exports = {
   queryAllArticles,
   queryArticlesOfType,
   queryArticlesOfTag,
-  queryArticlesGroupByYear,
+  queryArticlesOrderByYear,
   queryTagsGroups,
   queryArticleNum,
   queryArticleByPage,
+  queryTypeGroups,
 };
