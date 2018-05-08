@@ -10,12 +10,19 @@ const _add_cors_tags = async (ctx, next) => {
 };
 
 const _get_article_content = async (ctx) => {
-  ctx.body = await db_util.queryByUUID(ctx.params.id);
+  const result = await db_util.queryByUUID(ctx.params.id);
+  result.createdAt = `${result.createdAt.getFullYear()}-${result.createdAt.getMonth()}-${result.createdAt.getDay()}`;
+  result.title = result.title.slice(0,-3);
+  ctx.body = result;
 };
 
 const _get_articles_by_page = async (ctx) => {
   const total_num = await db_util.queryArticleNum();
   let articles = await db_util.queryArticleByPage(ctx.params.page, 10);
+  articles.map(article=>{
+    article.createdAt = `${article.createdAt.getFullYear()}-${article.createdAt.getMonth()}-${article.createdAt.getDay()}`;
+    article.title = article.title.slice(0,-3);
+  });
   ctx.body = {
     articles,
     total_page: Math.ceil(total_num/10),

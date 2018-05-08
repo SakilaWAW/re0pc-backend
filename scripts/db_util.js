@@ -64,8 +64,6 @@ const queryByUUID = async (uuid) => {
   const results = await sequelize.query(`select id, title, "createdAt", type, count, content from articles where id = '${uuid}'`, { type: sequelize.QueryTypes.SELECT });
   let result = results[0];
   result.tag = await queryTags(uuid);
-  result.createdAt = `${result.createdAt.getFullYear()}-${result.createdAt.getMonth()}-${result.createdAt.getDay()}`;
-  result.title = result.title.slice(0,-3);
   return Article.createWith(result);
 };
 
@@ -173,10 +171,20 @@ const queryAllArticles = async () => {
   return await sequelize.query('select id, title, "createdAt", type, count from articles', { type: sequelize.QueryTypes.SELECT });
 };
 
+/**
+ * 查询某一类别下的所有文章
+ * @param type 目标类别
+ * @return {Promise<*>} [{id,title,createdAt}...]
+ */
 const queryArticlesOfType = async (type) => {
   return await sequelize.query(`select id, title, "createdAt" from articles where type='${type}'`, { type: sequelize.QueryTypes.SELECT });
 };
 
+/**
+ * 查询含有某一个标签的所有文章
+ * @param tag 目标标签
+ * @return {Promise<*>} [{id,title,createdAt}...]
+ */
 const queryArticlesOfTag = async (tag) => {
   return await sequelize.query(`select a.id, a.title, a."createdAt" from articles as a,tags as t where t.tag = '${tag}' and t.uuid = a.id`, { type: sequelize.QueryTypes.SELECT });
 };
@@ -213,18 +221,13 @@ const queryArticleNum = async () => {
  * @return {Promise<void>} article对象数组-[{id,title,createdAt,type,count,content}...]
  */
 const queryArticleByPage = async (page, limit) => {
-  const articles = await sequelize.query(`select id, title, "createdAt", type, count, content from 
+  return await sequelize.query(`select id, title, "createdAt", type, count, content from 
                                     (
                                         select *,
                                                row_number() over(order by "createdAt" desc) as rowNum
                                         from articles
                                     )a
                                     where rowNum between ${(page-1)*limit+1} and ${page*limit}`, { type: sequelize.QueryTypes.SELECT });
-  articles.map((article)=>{
-    article.createdAt = `${article.createdAt.getFullYear()}-${article.createdAt.getMonth()}-${article.createdAt.getDay()}`;
-    article.title = article.title.slice(0,-3);
-  });
-  return articles;
 };
 
 /**
