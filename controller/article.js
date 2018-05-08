@@ -11,30 +11,26 @@ const _add_cors_tags = async (ctx, next) => {
 
 const _get_article_content = async (ctx) => {
   const result = await db_util.queryByUUID(ctx.params.id);
-  result.createdAt = `${result.createdAt.getFullYear()}-${result.createdAt.getMonth()}-${result.createdAt.getDay()}`;
-  result.title = result.title.slice(0,-3);
-  ctx.body = result;
+  ctx.body = purifyDateAndTitle(result);
 };
 
 const _get_articles_by_page = async (ctx) => {
   const total_num = await db_util.queryArticleNum();
   let articles = await db_util.queryArticleByPage(ctx.params.page, 10);
-  articles.map(article=>{
-    article.createdAt = `${article.createdAt.getFullYear()}-${article.createdAt.getMonth()}-${article.createdAt.getDay()}`;
-    article.title = article.title.slice(0,-3);
-  });
   ctx.body = {
-    articles,
+    articles: purifyDateAndTitle(articles),
     total_page: Math.ceil(total_num/10),
   };
 };
 
 const _get_articles_of_type = async (ctx) => {
-  ctx.body = await db_util.queryArticlesOfType(ctx.params.type);
+  const articles = await db_util.queryArticlesOfType(ctx.params.type);
+  ctx.body = purifyDateAndTitle(articles);
 };
 
 const _get_articles_of_tag = async (ctx) => {
-  ctx.body = await db_util.queryArticlesOfTag(ctx.params.tag);
+  const articles = await db_util.queryArticlesOfTag(ctx.params.tag);
+  ctx.body = purifyDateAndTitle(articles);
 };
 
 const _get_article_stats = async (ctx) => {
@@ -43,6 +39,19 @@ const _get_article_stats = async (ctx) => {
     total: articles.length,
     articles: combine_articles_by_years(articles),
   };
+};
+
+const _get_tag_stats = async (ctx) => {
+  ctx.body = await db_util.queryTagsGroups();
+};
+
+const _read_article = async (ctx) => {
+  await db_util.updateCount(ctx.params.id, 1);
+  ctx.response.status = 204;
+};
+
+const _get_type_status = async (ctx) => {
+  ctx.body = await db_util.queryTypeGroups();
 };
 
 const combine_articles_by_years = (articles) => {
@@ -68,17 +77,20 @@ const combine_articles_by_years = (articles) => {
   return articlesInGroup;
 };
 
-const _get_tag_stats = async (ctx) => {
-  ctx.body = await db_util.queryTagsGroups();
+const purifyDateAndTitle = (article) => {
+  if(Object.prototype.toString.call(article) === '[object Array]') {
+    article.map(art=>{
+      purifySingleDateAndTitle(art);
+    });
+    return article;
+  }
+  else return purifySingleDateAndTitle(article);
 };
 
-const _read_article = async (ctx) => {
-  await db_util.updateCount(ctx.params.id, 1);
-  ctx.response.status = 204;
-};
-
-const _get_type_status = async (ctx) => {
-  ctx.body = await db_util.queryTypeGroups();
+const purifySingleDateAndTitle = (article) => {
+  article.createdAt = `${article.createdAt.getFullYear()}-${article.createdAt.getMonth()}-${article.createdAt.getDay()}`;
+  article.title = article.title.slice(0,-3);
+  return article;
 };
 
 /**
