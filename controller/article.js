@@ -61,8 +61,8 @@ const combine_articles_by_years = (articles) => {
   for (let i = 0 ;i < articles.length; i++) {
     let article = articles[i];
     let this_year = article.createdAt.getFullYear();
-    let this_month = article.createdAt.getMonth();
-    let this_day = article.createdAt.getDay();
+    let this_month = article.createdAt.getMonth()+1;
+    let this_day = article.createdAt.getDate();
     cur_articles.push(article);
     if(i === articles.length-1
       || this_year !== articles[i+1].createdAt.getFullYear()){
