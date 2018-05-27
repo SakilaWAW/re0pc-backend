@@ -88,7 +88,7 @@ const purifyDateAndTitle = (article) => {
 };
 
 const purifySingleDateAndTitle = (article) => {
-  article.createdAt = `${article.createdAt.getFullYear()}-${article.createdAt.getMonth()}-${article.createdAt.getDay()}`;
+  article.createdAt = `${article.createdAt.getFullYear()}-${article.createdAt.getMonth()+1}-${article.createdAt.getDate()}`;
   article.title = article.title.slice(0,-3);
   return article;
 };
