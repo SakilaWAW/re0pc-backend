@@ -34,7 +34,7 @@ const _get_articles_of_tag = async (ctx) => {
 };
 
 const _get_article_stats = async (ctx) => {
-  let articles = await db_util.queryArticlesOrderByYear();
+  let articles = await db_util.queryArticlesOrderByYearDesc();
   ctx.body = {
     total: articles.length,
     articles: combine_articles_by_years(articles),

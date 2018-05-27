@@ -193,8 +193,8 @@ const queryArticlesOfTag = async (tag) => {
  * 按年份顺序查询文章
  * @return {Promise<*>} 按年份顺序返回 [{id,title,createdAt}...]
  */
-const queryArticlesOrderByYear = async () => {
-  return await sequelize.query('select id, title, "createdAt" from articles order by "createdAt"', { type: sequelize.QueryTypes.SELECT });
+const queryArticlesOrderByYearDesc = async () => {
+  return await sequelize.query('select id, title, "createdAt" from articles order by "createdAt" desc', { type: sequelize.QueryTypes.SELECT });
 };
 
 /**
@@ -254,7 +254,7 @@ module.exports = {
   queryAllArticles,
   queryArticlesOfType,
   queryArticlesOfTag,
-  queryArticlesOrderByYear,
+  queryArticlesOrderByYearDesc,
   queryTagsGroups,
   queryArticleNum,
   queryArticleByPage,
