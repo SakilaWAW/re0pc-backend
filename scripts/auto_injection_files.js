@@ -1,7 +1,7 @@
 /**
  * 本脚本用于设置定时任务:在每天晚上自动检测新增文章并将文章内容注入数据库
  */
-const FILE_PATH = '/home/stg/WebProjects/md_files/';
+const FILE_PATH = '/root/static/blogs';
 
 const schedule = require("node-schedule");
 const inject_executor = require('./file_inject_executor');
