@@ -99,12 +99,12 @@ const purifySingleDateAndTitle = (article) => {
  * 属性值为一个数组,数组为一个处理流
  */
 module.exports = {
-  'GET /article/:id': [_add_cors_tags, _get_article_content],
-  'GET /page/:page': [_add_cors_tags, _get_articles_by_page],
-  'GET /type/:type': [_add_cors_tags, _get_articles_of_type],
-  'GET /tag/:tag': [_add_cors_tags, _get_articles_of_tag],
-  'GET /stats/article': [_add_cors_tags, _get_article_stats],
-  'GET /stats/tag': [_add_cors_tags, _get_tag_stats],
-  'GET /read/:id': [_add_cors_tags, _read_article],
-  'GET /stats/type': [_add_cors_tags, _get_type_status],
+  'GET /api/v1/article/:id': [_add_cors_tags, _get_article_content],
+  'GET /api/v1/page/:page': [_add_cors_tags, _get_articles_by_page],
+  'GET /api/v1/type/:type': [_add_cors_tags, _get_articles_of_type],
+  'GET /api/v1/tag/:tag': [_add_cors_tags, _get_articles_of_tag],
+  'GET /api/v1/stats/article': [_add_cors_tags, _get_article_stats],
+  'GET /api/v1/stats/tag': [_add_cors_tags, _get_tag_stats],
+  'GET /api/v1/read/:id': [_add_cors_tags, _read_article],
+  'GET /api/v1/stats/type': [_add_cors_tags, _get_type_status],
 };
